@@ -5,12 +5,12 @@
 ' Column D: body, HTML script
 ' Column E: name of files separated by space ' '
 
-Sub enviarcorreo()
+Sub sendemail()
     Dim I, j As Integer
-    Dim pagina1 As Worksheet
-    Set pagina1 = ActiveWorkbook.Worksheets("Hoja1")
+    Dim page1 As Worksheet
+    Set page1 = ActiveWorkbook.Worksheets("Hoja1")
     Dim OutApp As Object
-    Dim Correo As Object
+    Dim Email As Object
     Dim FilePath As String
     Dim File As Variant
     
@@ -34,15 +34,15 @@ Sub enviarcorreo()
         ' App
         If OutApp Is Nothing Then Set OutApp = CreateObject("Outlook.Application")
 
-        ' folder path to files
-        FilePath = "C:\Users\A8065955\OneDrive - GFBANORTE\Documents\Correcciones\PDFs\"
+        ' folder path to files to attach in the email (files PDFs)
+        FilePath = "C:\" 
         
         ' Item email
         OutApp.Visible = True
-        Set Correo = OutApp.CreateItem(0)
+        Set Email = OutApp.CreateItem(0)
         
         ' create object mail
-        With Correo
+        With Email
 
             ' add files
             For Each File In Split(Cells(To_, 5).Value)
