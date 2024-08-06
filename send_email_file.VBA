@@ -1,9 +1,11 @@
 ' VBA  send files with email
 ' Column A: To
-' Column B: CC -> separated by semicolons ';' 
+' Column B: CC -> separated by semicolons ";"
 ' Column C: Subject
 ' Column D: body, HTML script
-' Column E: name of files separated by space ' '
+' Column E: name of files separated by semicolon ";"
+' Column F: VBA write status if email, successful or unsuccessful
+' Column G: VBA write name of file with error
 
 Sub sendemail()
     Dim I, j As Integer
@@ -13,6 +15,8 @@ Sub sendemail()
     Dim Email As Object
     Dim FilePath As String
     Dim File As Variant
+    Dim Pass As Integer
+    Dim FileName As String
     
     ' App
     With Application
@@ -44,18 +48,41 @@ Sub sendemail()
         ' create object mail
         With Email
 
-            ' add files
-            For Each File In Split(Cells(To_, 5).Value)
-                .Attachments.Add (FilePath & File)
-            Next File
+            ' If Pass = then send eamil
+            Pass = 1
 
             ' add subjects
             .To = Cells(To_, 1).Value
             .CC = Cells(To_, 2).Value
             .Subject = Cells(To_, 3).Value
             .HTMLBody = Cells(To_, 4).Value
-            '.Send 'send email
-            .Display ' show windows send whitout send message
+
+            ' add files
+            For Each File In Split(Cells(To_, 5).Value, ";")
+                If File <> "" Then ' Last value return char space
+                    ' Drop char space
+                    FileName = Trim(File)
+                    If Dir(FilePath & FileName & vbNormal) <> "" Then 
+                        ' Add file
+                        .Attachments.Add (FilePath & FileName)
+                    Else
+                        Debug.Print "Not exists <" & FileName & ">"
+                        ' Write name of the file with error
+                        Cells(To_, 7).Value = Cells(To_, 7).Value & " - not exists <" & FileName & ">"
+                        Cells(To_, 6).Value = "Not successful !!!"
+                        ' email is not sent
+                        Pass = 0
+                    End If
+            Next File
+            ' Check if is Attachments all files
+            If Pass = 1 Then
+                ' view previsualization of email 
+                .Display
+                ' Send email
+                ' .Send
+                Cells(To_, 6).Value = "was successful !!!"
+                Cells(To_, 7).Value = ""
+            End If
         End With
     
         ' App
